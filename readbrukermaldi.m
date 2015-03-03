@@ -20,7 +20,7 @@ function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 % all input spectra. The data are aligned such that each column of the
 % spectra matrix corresponds to the same mass.
 %
-%   Copyright (c) Alex Henderson, 2015
+%   Copyright (c) 2015, Alex Henderson.
 %   Contact email: alex.henderson@manchester.ac.uk
 %   Licenced under the GNU Lesser General Public License (LGPL) version 3
 %   https://www.gnu.org/copyleft/lesser.html
@@ -84,7 +84,7 @@ try
             [status,result] = system('dir fid /S /B');
         else
             if (isunix())
-                [status,result] = system(['find ', folder, ' -name "fid"']);
+                [status,result] = system(['find "', folder, '" -name "fid"']);
             end
         end
             
