@@ -4,8 +4,8 @@
 
 ## Version
 
-	Version 1.0
-	February 2015
+	Version 1.1
+	March 2015
 
 ## Usage
 
@@ -55,7 +55,7 @@ If you need R or Python code to read the Bruker Flex format, I recommend you che
 
 ## Legal bit
 
-Copyright (c) Alex Henderson, February 2015
+Copyright (c) Alex Henderson, 2015
 
 Licensed under the GNU Lesser General Public License (LGPL) version 3 [https://www.gnu.org/copyleft/lesser.html](https://www.gnu.org/copyleft/lesser.html) 
 
