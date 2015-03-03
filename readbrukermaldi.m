@@ -1,6 +1,6 @@
 function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 % READBRUKERMALDI Reads the Bruker Flex spectrum file format
-% Version 1.0
+% Version 1.1
 %
 % usage: 
 % [mass,spectra,filenames] = readbrukermaldi(foldernames);
@@ -20,7 +20,7 @@ function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 % all input spectra. The data are aligned such that each column of the
 % spectra matrix corresponds to the same mass.
 %
-%   Copyright (c) Alex Henderson, February 2015
+%   Copyright (c) Alex Henderson, 2015
 %   Contact email: alex.henderson@manchester.ac.uk
 %   Licenced under the GNU Lesser General Public License (LGPL) version 3
 %   https://www.gnu.org/copyleft/lesser.html
@@ -28,13 +28,14 @@ function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 %   If you use this file in your work, please acknowledge the author(s) in
 %   your publications. 
 %
-% Version 1.0, February 2015
+% Version 1.1, Alex Henderson March 2015
 
+% Version 1.1, Alex Henderson March 2015
+%   Added Linux compatibility. 
 % Version 1.0  Alex Henderson, February 2015
 %   Based on biotofspectrum version 1.1
 
 % Code to read the file format is at the end of this file
-
 
 % The Bruker file format comprises a folder with a collection of files in
 % subfolders. We're interested in two files: fid and acqus. The problem
@@ -55,7 +56,7 @@ if (~exist('foldernames', 'var'))
     end
 end
 
-foldernames = char(foldernames);
+foldernames = foldernames';
 numberoffolders = size(foldernames,1);
 
 % With the foldernames (either supplied or chosen using the GUI) we look
@@ -74,12 +75,19 @@ try
     % original folder if we get an error. 
 
     for i=1:numberoffolders
-        folder = foldernames(i,:);
+        folder = char(foldernames(i,:));
         % Move into the folder
         cd(folder);
         % Look for files called 'fid' in all subfolders
-        % Windows specific (TODO: make Linux and Mac compatible)
-        [status,result] = system('dir fid /S /B');
+        status = 1;
+        if (ispc())
+            [status,result] = system('dir fid /S /B');
+        else
+            if (isunix())
+                [status,result] = system(['find ', folder, ' -name "fid"']);
+            end
+        end
+            
         if (status == 0)
             % We found something
             try 
@@ -102,16 +110,13 @@ end
 % Go back to the original folder anyway
 cd(wherewewere);
 
-% The code above produces cells, so convert these to strings
-filenames = char(filenames);
 numberoffiles = size(filenames,1);
-
 
 %% Now we have a list of 'fid' files so we can open them and extract the spectra
 
 for i=1:numberoffiles
 
-    [mass_i, spectrum_i] = brukerflex(filenames(i,:));
+    [mass_i, spectrum_i] = brukerflex(char(filenames(i,:)));
     if (i==1)
         % First time through we initialise the data array
         spectra=zeros(numberoffiles,length(spectrum_i));
