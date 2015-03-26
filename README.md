@@ -9,11 +9,11 @@
 
 ## Usage
 
-	[mass,spectra,filenames] = readbrukermaldi(foldernames);
+	[mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames);
 
 **or**
 
-	[mass,spectra,filenames] = readbrukermaldi();
+	[mass,spectra,foldernames,filenames] = readbrukermaldi();
 
 (The second version prompts for one or more folder names.)
 
@@ -51,7 +51,8 @@ Information taken from:
 
 If you need R or Python code to read the Bruker Flex format, I recommend you check out these resources.
 
-
+##Updates
+A more updated version of this code may be found at: [https://github.com/AlexHenderson/readbrukermaldi](https://github.com/AlexHenderson/readbrukermaldi "MATLAB FileExchange")
 
 ## Legal bit
 
