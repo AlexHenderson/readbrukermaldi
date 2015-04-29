@@ -4,8 +4,8 @@
 
 ## Version
 
-	Version 1.1
-	March 2015
+	Version 1.2
+	April 2015
 
 ## Usage
 
