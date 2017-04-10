@@ -1,6 +1,6 @@
 function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 % READBRUKERMALDI Reads the Bruker Flex spectrum file format
-% Version 1.2
+% Version 1.3
 %
 % usage: 
 % [mass,spectra,filenames] = readbrukermaldi(foldernames);
@@ -20,7 +20,7 @@ function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 % all input spectra. The data are aligned such that each column of the
 % spectra matrix corresponds to the same mass.
 %
-%   Copyright (c) 2015, Alex Henderson.
+%   Copyright (c) 2015-2017, Alex Henderson.
 %   Contact email: alex.henderson@manchester.ac.uk
 %   Licenced under the GNU Lesser General Public License (LGPL) version 3
 %   https://www.gnu.org/copyleft/lesser.html
@@ -28,8 +28,10 @@ function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 %   If you use this file in your work, please acknowledge the author(s) in
 %   your publications. 
 %
-% Version 1.2, Alex Henderson April 2015
+% Version 1.3, Alex Henderson April 2017
 
+% Version 1.3, Alex Henderson April 2017
+%   Incorporated find_value2 function. 
 % Version 1.2, Alex Henderson April 2015
 %   Fixed bug when passing in a folder name. 
 % Version 1.1, Alex Henderson March 2015
@@ -48,8 +50,12 @@ function [mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames)
 % Exchange: uipickfiles
 % http://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles--uigetfile-on-steroids
 
+%% Check whether uipickfiles function is available
+if ~exist('uipickfiles','file')
+    error('This function relies ''uipickfiles'' available from MATLAB File Exchange: http://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles--uigetfile-on-steroids');
+end
 
-% Check whether the user has supplied a list of folders
+%% Check whether the user has supplied a list of folders
 if (~exist('foldernames', 'var'))
     foldernames = uipickfiles();
     if (isfloat(foldernames) && (foldernames==0))
@@ -284,3 +290,27 @@ end
 mass = (mass .^2) * sign;
 
 end % function brukerflex
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+function [vec_index]=find_value2(vector,value)
+
+% This function finds the indices for a value in vector
+%
+% Normal vector, not saisir structure
+%
+% Usage [vec_index]=find_value2(vector,value)
+
+% Modified version of find_value to allow more than one value to be
+% calculated. Alex Henderson, January 2013
+
+
+if (numel(value) > 1)
+    vec_index = zeros(size(value));
+    for i = 1:length(value)
+        [output_value,vec_index(i)] = min(abs(vector-value(i)));
+    end
+else
+    [output_value,vec_index] = min(abs(vector-value));
+end
+
+end
