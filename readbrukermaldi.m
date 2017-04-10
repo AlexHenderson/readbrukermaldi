@@ -56,9 +56,9 @@ if ~exist('uipickfiles','file')
 end
 
 %% Check whether the user has supplied a list of folders
-if (~exist('foldernames', 'var'))
+if ~exist('foldernames', 'var')
     foldernames = uipickfiles();
-    if (isfloat(foldernames) && (foldernames==0))
+    if (isfloat(foldernames) && (foldernames == 0))
         % Nothing chosen
         return;
     end
@@ -68,7 +68,7 @@ end
 % 1 x many. We need a list of dimension many x 1. However, we may have been
 % passed a column of cells containing foldernames. Another possibility is
 % that we have a char array passed in as a row vector.
-if (iscell(foldernames))
+if iscell(foldernames)
      if (size(foldernames,2) > 1)
         foldernames = foldernames';
      end
@@ -90,16 +90,16 @@ try
     % We're using a try/catch mechanism to make sure we return to the
     % original folder if we get an error. 
 
-    for i=1:numberoffolders
+    for i = 1:numberoffolders
         folder = char(foldernames(i,:));
         % Move into the folder
         cd(folder);
         % Look for files called 'fid' in all subfolders
         status = 1;
-        if (ispc())
+        if ispc()
             [status,result] = system('dir fid /S /B');
         else
-            if (isunix())
+            if isunix()
                 [status,result] = system(['find "', folder, '" -name "fid"']);
             end
         end
@@ -110,7 +110,7 @@ try
                 % strsplit introduced after R2012a
                 filesinfolder = strsplit(result,'\n');
             catch exception
-                [filesinfolder, matches] = regexp(result, '\n', 'split', 'match'); 
+                [filesinfolder,matches] = regexp(result,'\n','split','match'); 
             end
             filenames = vertcat(filenames,filesinfolder(1:end-1)');
         end
@@ -120,7 +120,7 @@ catch exception
     
     % Go back to the original folder if there is an error
     cd(wherewewere);
-    error(exception.identifier, exception.message);
+    error(exception.identifier,exception.message);
 end
 
 % Go back to the original folder anyway
@@ -130,68 +130,69 @@ numberoffiles = size(filenames,1);
 
 %% Now we have a list of 'fid' files so we can open them and extract the spectra
 
-for i=1:numberoffiles
+for i = 1:numberoffiles
 
-    [mass_i, spectrum_i] = brukerflex(char(filenames(i,:)));
-    if (i==1)
+    [mass_i,spectrum_i] = brukerflex(char(filenames(i,:)));
+    if (i == 1)
         % First time through we initialise the data array
-        spectra=zeros(numberoffiles,length(spectrum_i));
-        spectra(1,:)=spectrum_i;
-        mass=mass_i;
+        spectra = zeros(numberoffiles,length(spectrum_i));
+        spectra(1,:) = spectrum_i;
+        mass = mass_i;
     end
     
-    needtointerpolate=0;
-    if(length(mass_i) ~= length(mass))
+    needtointerpolate = 0;
+    if (length(mass_i) ~= length(mass))
         % Different number of data points, so we need to interpolate the
         % data. This is examined separately otherwise, if the two vectors
         % are of different length, MATLAB raises an error. 
-        needtointerpolate=1;
+        needtointerpolate = 1;
     else
-        if(mass_i ~= mass)
+        if (mass_i ~= mass)
             % Different values of mass, so we need to interpolate the data
-            needtointerpolate=1;
+            needtointerpolate = 1;
         end
     end
     
-    if(needtointerpolate)
+    if needtointerpolate
         % First determine the range over which the mismatched spectra
         % overlap. Then truncate both the mass vector and data matrix for
         % the data already processed and the new data.
         
-       lowmass=max(mass(1), mass_i(1));
-       highmass=min(mass(end), mass_i(end));
+       lowmass = max(mass(1),mass_i(1));
+       highmass = min(mass(end),mass_i(end));
        
-       idx=find_value2(mass,[lowmass,highmass]);
-       mass=mass(idx(1):idx(2));
-       spectra=spectra(:,idx(1):idx(2));
+       idx = find_value2(mass,[lowmass,highmass]);
+       mass = mass(idx(1):idx(2));
+       spectra = spectra(:,idx(1):idx(2));
        
-       idx=find_value2(mass_i,[lowmass,highmass]);
-       mass_i=mass_i(idx(1):idx(2));
-       spectrum_i=spectrum_i(idx(1):idx(2));
+       idx = find_value2(mass_i,[lowmass,highmass]);
+       mass_i = mass_i(idx(1):idx(2));
+       spectrum_i = spectrum_i(idx(1):idx(2));
        
        % Now interpolate the new spectrum vector to match the existing
        % data.       
-       spectrum_i=interp1(mass_i,spectrum_i,mass,'linear');
+       spectrum_i = interp1(mass_i,spectrum_i,mass,'linear');
     end
     
-    spectra(i,:)=spectrum_i;
+    spectra(i,:) = spectrum_i;
 end
 
 % Sometimes the interpolation turns up a NaN in either the first or last
 % channel. Possibly both. Here we truncate the data to remove them. 
-if(find(isnan(spectra(:,1))))
-    mass=mass(2:end);
-    spectra=spectra(:,2:end);
+if find(isnan(spectra(:,1)))
+    mass = mass(2:end);
+    spectra = spectra(:,2:end);
 end
-if(find(isnan(spectra(:,end))))
-    mass=mass(1:end-1);
-    spectra=spectra(:,1:end-1);
+
+if find(isnan(spectra(:,end)))
+    mass = mass(1:end-1);
+    spectra = spectra(:,1:end-1);
 end
 
 end % function readbrukermaldi
 
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [mass, spectrum] = brukerflex(fidfilename)
+function [mass,spectrum] = brukerflex(fidfilename)
 
 % BRUKERFLEX Reads the Bruker Flex spectrum file format
 % Version 1.0
@@ -240,7 +241,7 @@ function [mass, spectrum] = brukerflex(fidfilename)
 
 try
     [filehandle,message] = fopen(fidfilename);
-    if(filehandle == -1)
+    if (filehandle == -1)
         error(message); 
     end;
 
@@ -248,9 +249,8 @@ try
     fclose(filehandle);
 catch exception
     fclose(filehandle);
-    error(exception.identifier, exception.message);
+    error(exception.identifier,exception.message);
 end
-    
 
 [pathstr] = fileparts(fidfilename);
 acqusfilename = fullfile(pathstr,'acqus');
@@ -292,7 +292,7 @@ mass = (mass .^2) * sign;
 end % function brukerflex
 
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-function [vec_index]=find_value2(vector,value)
+function [vec_index] = find_value2(vector,value)
 
 % This function finds the indices for a value in vector
 %
@@ -302,7 +302,6 @@ function [vec_index]=find_value2(vector,value)
 
 % Modified version of find_value to allow more than one value to be
 % calculated. Alex Henderson, January 2013
-
 
 if (numel(value) > 1)
     vec_index = zeros(size(value));
