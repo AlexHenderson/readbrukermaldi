@@ -4,22 +4,20 @@
 
 ## Version
 
-	Version 1.2
-	April 2015
+	Version 1.3
+	April 2017
 
 ## Usage
 
-	[mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames);
+	[mass,spectra,foldernames,filenames] = readbrukermaldi();
 
 **or**
 
-	[mass,spectra,foldernames,filenames] = readbrukermaldi();
-
-(The second version prompts for one or more folder names.)
+	[mass,spectra,foldernames,filenames] = readbrukermaldi(foldernames);
 
 ## Input
 
-	Zero, one or more folder names.
+	Zero, one or more folder names as a cell array of strings.
 
 ## Output
 
@@ -33,6 +31,7 @@
 The Bruker file format comprises a folder with a collection of files in subfolders. We're interested in two files: fid and acqus. The problem with reading multiple Bruker spectra is that they can't appear in the same folder since they'd overwrite one another. Therefore we need to have
 a method of selecting multiple folders rather than files. MATLAB doesn't have this built in, so we're using a component from the MATLAB File Exchange: **uipickfiles** [http://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles--uigetfile-on-steroids
 ](http://www.mathworks.com/matlabcentral/fileexchange/10867-uipickfiles--uigetfile-on-steroids)
+
 ## Notes
 
 There is NO binning into fixed mass steps. Where the spectra are misaligned, the data is interpolated (linearly). The maximum and minimum mass limits are determined by the spectrum with the smallest mass range, such that the spectra matrix only contains the mass range that overlaps all input spectra. The data are aligned such that each column of the spectra matrix corresponds to the same mass.
@@ -51,12 +50,17 @@ Information taken from:
 
 If you need R or Python code to read the Bruker Flex format, I recommend you check out these resources.
 
-##Updates
+## Updates
 A more updated version of this code may be found at: [https://github.com/AlexHenderson/readbrukermaldi](https://github.com/AlexHenderson/readbrukermaldi "MATLAB FileExchange")
+
+## Bugs
+Otherwise know as 'undocumented features' :-)
+
+Either use the Issue Tracker on the Github site: [https://github.com/AlexHenderson/readbrukermaldi/issues](https://github.com/AlexHenderson/readbrukermaldi/issues), or contact Alex by email.
 
 ## Legal bit
 
-Copyright (c) Alex Henderson, 2015
+Copyright (c) Alex Henderson, 2015-2017
 
 Licensed under the GNU Lesser General Public License (LGPL) version 3 [https://www.gnu.org/copyleft/lesser.html](https://www.gnu.org/copyleft/lesser.html) 
 
